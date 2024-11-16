@@ -12,3 +12,80 @@
   border: 1px solid #ddd;
   border-radius: 8px;
 }
+
+.sidebar {
+  height: 100vh;
+  background-color: #343a40;
+  color: white;
+  position: fixed;
+  top: 0;
+  left: 0;
+  padding-top: 60px;
+  width: 200px;
+}
+
+.sidebar a {
+  color: white;
+  text-decoration: none;
+  padding: 10px;
+  display: block;
+}
+
+.sidebar a:hover {
+  color: #adb5bd;
+  background-color: #495057;
+}
+
+.main-content {
+  margin-left: 200px;
+  padding-top: 60px;
+}
+
+.user-card {
+  margin-bottom: 20px;
+  position: relative;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+  border-radius: 10px;
+}
+
+.certificate-img {
+  max-width: 150px;
+  cursor: pointer;
+}
+
+.action-buttons {
+  display: flex;
+  justify-content: flex-end; /* Align buttons to the right */
+  margin-top: 15px;
+  padding: 10px;
+}
+.action-buttons .btn {
+  margin-left: 10px; /* Space between buttons */
+  font-size: 0.9rem; /* Smaller font size */
+  padding: 8px 12px; /* Smaller padding */
+}
+.action-buttons .btn-success {
+  background-color: #28a745;
+  border-color: #28a745;
+}
+.action-buttons .btn-danger {
+  background-color: #dc3545;
+  border-color: #dc3545;
+}
+.action-buttons .btn:hover {
+  filter: brightness(0.9);
+}
+
+.form-section {
+  margin-top: 20px;
+}
+.form-label {
+  font-weight: bold;
+}
+
+.profile-picture-container {
+  height: 150px;
+  width: 150px;
+  border-radius: 50%;
+  overflow: hidden;
+}
