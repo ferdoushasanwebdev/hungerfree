@@ -4,8 +4,9 @@
   <?php if ($_SESSION['user_role'] == "admin") {
   ?>
     <a href="./newusers.php">New Users</a>
-    <a href="#">New Posts</a><?php
-                            } ?>
+    <a href="#">New Posts</a>
+    <a href="./category.php">Categories</a><?php
+                                          } ?>
   <?php if ($_SESSION['user_role'] == "donor") {
   ?><a href="./createPost.php">Create Post</a>
     <a href="#">My Posts</a><?php
