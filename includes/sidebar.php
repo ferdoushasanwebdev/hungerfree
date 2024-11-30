@@ -9,7 +9,7 @@
                                           } ?>
   <?php if ($_SESSION['user_role'] == "donor") {
   ?><a href="./createPost.php">Create Post</a>
-    <a href="#">My Posts</a><?php
-                          } ?>
+    <a href="./myposts.php">My Posts</a><?php
+                                      } ?>
   <a href="./settings.php">Settings</a>
 </div>

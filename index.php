@@ -1,11 +1,11 @@
 <?php
-session_start();
+include_once("./class/class.user.php");
+
 if (isset($_SESSION['user_id'])) {
   header("Location: dashboard.php");
   exit;
 }
 
-include_once("./class/class.user.php");
 $userObj = new User();
 
 if ($_SERVER['REQUEST_METHOD'] == "POST") {

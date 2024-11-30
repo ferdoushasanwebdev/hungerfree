@@ -149,7 +149,7 @@ class User
         }
     }
 
-    public function updateUser($userid, $name, $email, $address, $newpassword, $confirmpassword, $photo)
+    public function updateUser($userid, $name, $email, $address, $district, $division, $newpassword, $confirmpassword, $photo)
     {
         $fileArray = $this->uploadFile($photo);
         if (is_array($fileArray)) {
@@ -163,10 +163,10 @@ class User
             if (!empty($newpassword) && !empty($confirmpassword)) {
                 if ($newpassword == $confirmpassword) {
                     $password = password_hash($newpassword, PASSWORD_BCRYPT);
-                    $sql = "UPDATE users SET user_name=?, user_email=?, user_address=?, user_password=?, user_photo=? WHERE user_id=?";
+                    $sql = "UPDATE users SET user_name=?, user_email=?, user_address=?, user_district=?, user_division=?, user_password=?, user_photo=? WHERE user_id=?";
 
                     $stmt = $this->conn->prepare($sql);
-                    $stmt->bind_param("sssssi", $name, $email, $address, $password, $fileName, $userid);
+                    $stmt->bind_param("sssssssi", $name, $email, $address, $district, $division, $password, $fileName, $userid);
 
                     if ($stmt->execute()) {
                         if (isset($fileTemp)) {
@@ -181,9 +181,9 @@ class User
                     $this->conn->close();
                 }
             } else {
-                $sql = "UPDATE users SET user_name=?, user_email=?, user_address=?, user_photo=? WHERE user_id=?";
+                $sql = "UPDATE users SET user_name=?, user_email=?, user_address=?, user_district=?, user_division=?, user_photo=? WHERE user_id=?";
                 $stmt = $this->conn->prepare($sql);
-                $stmt->bind_param("ssssi", $name, $email, $address, $fileName, $userid);
+                $stmt->bind_param("ssssssi", $name, $email, $address, $district, $division, $fileName, $userid);
 
                 if ($stmt->execute()) {
                     if (isset($fileTemp)) {

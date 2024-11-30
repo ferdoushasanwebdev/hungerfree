@@ -26,6 +26,8 @@ $user = $userObj->fetchUserById($_SESSION['user_id'])[0];
                     <p><strong>Phone:</strong> <?php echo ($user['user_phone']) ?></p>
                     <p><strong>Email:</strong> <?php echo ($user['user_email']) ?></p>
                     <p><strong>Address:</strong> <?php echo ($user['user_address']) ?></p>
+                    <p><strong>District:</strong> <?php echo ($user['user_district']) ?></p>
+                    <p><strong>Division:</strong> <?php echo ($user['user_division']) ?></p>
                     <p><strong>Role:</strong> <?php echo ($user['user_role']) ?></p>
                 </div>
             </div>

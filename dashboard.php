@@ -45,6 +45,14 @@ if (!isset($_SESSION['user_id'])) {
           </div>
         </div><?php
             } ?>
+      <?php if ($_SESSION['user_role'] == "recipient") {
+      ?>
+        <div class="col-md-4 mb-4">
+          <div class="border border-secondary border-1 rounded-1 py-3 text-center">
+            <a href="discoverposts.php" class="text-decoration-none text-secondary">Discover Available Foods</a>
+          </div>
+        </div><?php
+            } ?>
     </div>
 
     <div class="row">
