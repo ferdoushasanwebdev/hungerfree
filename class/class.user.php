@@ -33,6 +33,8 @@ class User
                         $_SESSION['user_name'] = $result[0]['user_name'];
                         $_SESSION['user_phone'] = $result[0]['user_phone'];
                         $_SESSION['user_email'] = $result[0]['user_email'];
+                        $_SESSION['user_district'] = $result[0]['user_district'];
+                        $_SESSION['user_division'] = $result[0]['user_division'];
                         $_SESSION['user_role'] = $result[0]['user_role'];
 
                         header("Location: dashboard.php");

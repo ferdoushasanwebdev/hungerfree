@@ -1,4 +1,6 @@
-<?php include("./includes/header.php");
+<?php
+include("./includes/header.php");
+include("./class/class.category.php");
 
 if (!isset($_SESSION['user_id'])) {
     header("Location: index.php");
@@ -7,9 +9,13 @@ if (!isset($_SESSION['user_id'])) {
 include("./class/class.post.php");
 $postObj = new Post();
 $posts = $postObj->fetchPosts();
+
+$catObj = new Category();
+$categories = $catObj->fetchCategories();
 ?>
 <style>
     .post-card {
+        display: none;
         width: 50%;
         margin-bottom: 20px;
     }
@@ -32,13 +38,19 @@ $posts = $postObj->fetchPosts();
         border-radius: 5px;
         margin-bottom: 20px;
     }
+
+    #noResults {
+        display: none;
+        text-align: center;
+        margin-top: 20px;
+        font-weight: bold;
+        color: #555;
+    }
 </style>
 <?php include("./includes/sidebar.php") ?>
 
 <main class="col-md-9 ms-sm-auto col-lg-10 px-md-4 main-content">
     <h1 class="mt-4">Discover Posts</h1>
-
-    <!-- Filter Section -->
     <div class="filter-section">
         <h5>Filter Posts</h5>
         <form>
@@ -46,48 +58,40 @@ $posts = $postObj->fetchPosts();
                 <div class="col-md-4">
                     <label for="categoryFilter" class="form-label">Food Category</label>
                     <select class="form-select" id="categoryFilter">
-                        <option selected>All</option>
-                        <option value="Vegetarian">Vegetarian</option>
-                        <option value="Non-Vegetarian">Non-Vegetarian</option>
-                        <option value="Dessert">Dessert</option>
-                    </select>
-                </div>
-                <div class="col-md-4">
-                    <label for="freshnessFilter" class="form-label">Freshness Time</label>
-                    <select class="form-select" id="freshnessFilter">
-                        <option selected>All</option>
-                        <option value="1 Hour">1 Hour</option>
-                        <option value="1 Day">1 Day</option>
-                        <option value="1 Week">1 Week</option>
-                    </select>
-                </div>
-                <div class="col-md-4">
-                    <label for="addressFilter" class="form-label">Address (District)</label>
-                    <select class="form-select" id="addressFilter">
-                        <option selected>All</option>
-                        <option value="Dhaka">Dhaka</option>
-                        <option value="Chittagong">Chittagong</option>
-                        <option value="Sylhet">Sylhet</option>
+                        <option value="all" selected>All</option>
+                        <?php if (isset($categories)) {
+                            foreach ($categories as $category) {
+                        ?>
+                                <option value="<?php echo ($category['cat_id']) ?>">
+                                    <?php echo ($category['cat_name']) ?>
+                                </option>
+                        <?php
+                            }
+                        } ?>
                     </select>
                 </div>
             </div>
             <div class="row">
-                <div class="col-md-6">
-                    <input type="radio" name="addressOption" id="withinAddress" value="Within Address">
+                <div class="col-md-3">
+                    <input type="radio" name="addressOption" id="withinAddress" value="within">
                     <label for="withinAddress">Posts within my address</label>
                 </div>
-                <div class="col-md-6">
-                    <input type="radio" name="addressOption" id="allPosts" value="All Posts" checked>
+                <div class="col-md-3">
+                    <input type="radio" name="addressOption" id="allPosts" value="all" checked>
                     <label for="allPosts">All posts</label>
                 </div>
             </div>
         </form>
     </div>
 
+    <div id="noResults">No posts match your filter criteria.</div>
+
     <?php if (isset($posts)) {
         foreach ($posts as $post) {
     ?>
-            <div class="card post-card">
+            <div class="card post-card"
+                data-category="<?php echo ($post['cat_id']); ?>"
+                data-address="<?php echo ($_SESSION['user_district'] == $post['user_district'] ? 'within' : 'all'); ?>">
                 <div class="card-body">
                     <div class="d-flex align-items-center mb-3">
                         <img src="./uploads/photo/<?php echo ($post['user_photo']); ?>" alt="Profile Picture" class="profile-pic" style="border-radius: 50%;">
@@ -110,6 +114,7 @@ $posts = $postObj->fetchPosts();
     <?php
         }
     } ?>
+
 </main>
 </div>
 </div>
@@ -128,30 +133,50 @@ $posts = $postObj->fetchPosts();
     </div>
 </div>
 
-<div class="modal fade" id="notificationsModal" tabindex="-1" aria-labelledby="notificationsModalLabel" aria-hidden="true">
-    <div class="modal-dialog">
-        <div class="modal-content">
-            <div class="modal-header">
-                <h5 class="modal-title" id="notificationsModalLabel">Notifications</h5>
-                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-            </div>
-            <div class="modal-body">
-                <ul class="list-group">
-                    <li class="list-group-item">Notification 1</li>
-                    <li class="list-group-item">Notification 2</li>
-                    <li class="list-group-item">Notification 3</li>
-                </ul>
-            </div>
-        </div>
-    </div>
-</div>
-
 <script>
     function showImage(src) {
         document.getElementById('modalImage').src = src;
         const imageModal = new bootstrap.Modal(document.getElementById('imageModal'));
         imageModal.show();
     }
+
+    const categoryFilter = document.getElementById("categoryFilter");
+    const addressOptions = document.querySelectorAll("input[name='addressOption']");
+    const postCards = document.querySelectorAll(".post-card");
+    const noResults = document.getElementById("noResults");
+
+    function filterPosts() {
+        const selectedCategory = categoryFilter.value; // Get selected category value
+        const selectedAddress = document.querySelector("input[name='addressOption']:checked").value; // Get selected address value
+
+        let visibleCount = 0; // Counter to track visible posts
+
+        postCards.forEach(post => {
+            const postCategory = post.getAttribute("data-category"); // Get category from data attribute
+            const postAddress = post.getAttribute("data-address"); // Get address from data attribute
+
+            const matchesCategory = selectedCategory === "all" || postCategory === selectedCategory; // Check if category matches
+            const matchesAddress = selectedAddress === "all" || (selectedAddress === "within" && postAddress === "within"); // Check if address matches
+
+            // Display post if it matches both filters
+            if (matchesCategory && matchesAddress) {
+                post.style.display = "block";
+                visibleCount++;
+            } else {
+                post.style.display = "none";
+            }
+        });
+
+        // Show 'No results' message if no posts are visible
+        noResults.style.display = visibleCount === 0 ? "block" : "none";
+    }
+
+
+    categoryFilter.addEventListener("change", filterPosts);
+    addressOptions.forEach(option => option.addEventListener("change", filterPosts));
+
+    // Initial filtering on page load
+    filterPosts();
 </script>
 
 <?php include("./includes/footer.php"); ?>

@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Host: 127.0.0.1
--- Generation Time: Nov 16, 2024 at 09:10 PM
+-- Generation Time: Dec 07, 2024 at 03:39 PM
 -- Server version: 10.4.32-MariaDB
 -- PHP Version: 8.2.12
 
@@ -32,6 +32,17 @@ CREATE TABLE `categories` (
   `cat_name` varchar(255) DEFAULT NULL,
   `cat_duration` int(11) DEFAULT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+
+--
+-- Dumping data for table `categories`
+--
+
+INSERT INTO `categories` (`cat_id`, `cat_name`, `cat_duration`) VALUES
+(1, 'Fruits', 72),
+(3, 'Vegetables', 72),
+(4, 'Dairy Products', 48),
+(5, 'Meat', 48),
+(7, 'Cooked Food', 48);
 
 -- --------------------------------------------------------
 
@@ -82,7 +93,6 @@ CREATE TABLE `notifications` (
 CREATE TABLE `posts` (
   `post_id` int(11) NOT NULL,
   `user_id` int(11) DEFAULT NULL,
-  `post_title` varchar(255) DEFAULT NULL,
   `cat_id` int(11) DEFAULT NULL,
   `post_food` varchar(20) DEFAULT NULL,
   `post_photo` varchar(255) DEFAULT NULL,
@@ -90,6 +100,14 @@ CREATE TABLE `posts` (
   `post_date` datetime DEFAULT NULL,
   `post_approved` tinyint(1) DEFAULT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+
+--
+-- Dumping data for table `posts`
+--
+
+INSERT INTO `posts` (`post_id`, `user_id`, `cat_id`, `post_food`, `post_photo`, `post_details`, `post_date`, `post_approved`) VALUES
+(4, 5, 5, 'Burger', '__opt__aboutcom__coeus__resources.jpg', 'Please contact me as soon as possible.', '2024-11-27 01:59:42', 1),
+(5, 10, 7, 'Rice', '507936866_6136178378001_6129561006001-vs-03eda158973046dcbab360b0a1644f71.jpg', 'Please contact me as soon as possible.', '2024-12-01 01:22:53', 1);
 
 -- --------------------------------------------------------
 
@@ -119,6 +137,7 @@ CREATE TABLE `users` (
   `user_password` varchar(100) NOT NULL,
   `user_address` varchar(255) DEFAULT NULL,
   `user_district` varchar(255) DEFAULT NULL,
+  `user_division` varchar(255) NOT NULL,
   `user_photo` varchar(255) DEFAULT NULL,
   `user_file` varchar(255) DEFAULT NULL,
   `user_role` varchar(50) DEFAULT NULL,
@@ -129,10 +148,11 @@ CREATE TABLE `users` (
 -- Dumping data for table `users`
 --
 
-INSERT INTO `users` (`user_id`, `user_name`, `user_phone`, `user_email`, `user_password`, `user_address`, `user_district`, `user_photo`, `user_file`, `user_role`, `user_approved`) VALUES
-(1, 'Ferdous Hasan', '01678774794', 'ferdoushasan@gmail.com', '$2y$10$GnXP/H05Rh4AAs3Jl8Xv3OoMy5K5h0ZZsNbrmu.2DXUOuwfXuJdOO', 'Golap Shah r Mazar', NULL, 'ferdoushasan.png', 'Screenshot 2024-11-14 175929.png', 'admin', 1),
-(2, 'Ferdous Hasan', '01678774795', 'ferdous@gmail.com', '$2y$10$2z13gZ5lBcWKvN9hxEeneu2Ct9klPeL0YhLeLQPgAP99XEAel.owG', NULL, NULL, NULL, 'Screenshot 2024-11-14 175929.png', 'donor', 1),
-(4, 'Fabiha Fairuz', '01678774796', 'fabiha@gmail.com', '$2y$10$hO8OszO98M5mIH8RFfspr.DkKppFLRAQ5yYc5y8sdM3.VqUiIslPC', NULL, NULL, NULL, 'Screenshot 2024-11-14 175929.png', 'donor', 0);
+INSERT INTO `users` (`user_id`, `user_name`, `user_phone`, `user_email`, `user_password`, `user_address`, `user_district`, `user_division`, `user_photo`, `user_file`, `user_role`, `user_approved`) VALUES
+(1, 'Ferdous Hasan', '01678774794', 'ferdoushasan@gmail.com', '$2y$10$GnXP/H05Rh4AAs3Jl8Xv3OoMy5K5h0ZZsNbrmu.2DXUOuwfXuJdOO', 'Dhanmondi', 'Dhaka', 'Dhaka', 'ferdoushasan.png', 'Screenshot 2024-11-14 175929.png', 'admin', 1),
+(5, 'Ferdous Hasan', '01678774795', 'ferdoushasan@gmail.com', '$2y$10$Kr0TQf25LPXuXyk0.PW/puhTLv2Pe.Zt3J7X1te6/NW0oGvR36zd2', 'Footpath', 'Moulvibazar', 'Sylhet', 'ferdoushasan.png', 'Screenshot 2024-11-14 175929.png', 'donor', 1),
+(7, 'Food Foundation', '01678774797', 'foodfoundation@gmail.com', '$2y$10$ZSBuxttucTtEVVBEcGTlWOfp7JUdLQzmHayluQQ4n2qbi3pSccJci', '152/A', 'Gazipur', 'Dhaka', 'female-avater.jpg', 'Screenshot 2024-11-14 175929.png', 'recipient', 1),
+(10, 'Fabiha Fayruj', '01678774796', 'fabiha@gmail.com', '$2y$10$hK5R3DfY8ZStHuMeyhkHre/n3nMLuo87fNu7ILFOwd.vJWSOuhsES', 'Footpath', 'Gazipur', 'Dhaka', 'female-avater.jpg', 'Screenshot 2024-11-14 175929.png', 'donor', 1);
 
 --
 -- Indexes for dumped tables
@@ -196,7 +216,7 @@ ALTER TABLE `users`
 -- AUTO_INCREMENT for table `categories`
 --
 ALTER TABLE `categories`
-  MODIFY `cat_id` int(11) NOT NULL AUTO_INCREMENT;
+  MODIFY `cat_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=10;
 
 --
 -- AUTO_INCREMENT for table `feedbacks`
@@ -220,7 +240,7 @@ ALTER TABLE `notifications`
 -- AUTO_INCREMENT for table `posts`
 --
 ALTER TABLE `posts`
-  MODIFY `post_id` int(11) NOT NULL AUTO_INCREMENT;
+  MODIFY `post_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=6;
 
 --
 -- AUTO_INCREMENT for table `requests`
@@ -232,7 +252,7 @@ ALTER TABLE `requests`
 -- AUTO_INCREMENT for table `users`
 --
 ALTER TABLE `users`
-  MODIFY `user_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=5;
+  MODIFY `user_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=11;
 
 --
 -- Constraints for dumped tables
