@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Host: 127.0.0.1
--- Generation Time: Dec 07, 2024 at 03:39 PM
+-- Generation Time: Dec 14, 2024 at 05:43 PM
 -- Server version: 10.4.32-MariaDB
 -- PHP Version: 8.2.12
 
@@ -78,11 +78,20 @@ CREATE TABLE `histories` (
 
 CREATE TABLE `notifications` (
   `not_id` int(11) NOT NULL,
-  `not_user` int(11) DEFAULT NULL,
-  `not_content` varchar(255) DEFAULT NULL,
+  `not_sender` int(11) DEFAULT NULL,
+  `not_receiver` int(11) NOT NULL,
+  `not_post` int(11) NOT NULL,
+  `not_type` varchar(10) DEFAULT NULL,
   `not_read` tinyint(1) DEFAULT NULL,
   `not_date` datetime DEFAULT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+
+--
+-- Dumping data for table `notifications`
+--
+
+INSERT INTO `notifications` (`not_id`, `not_sender`, `not_receiver`, `not_post`, `not_type`, `not_read`, `not_date`) VALUES
+(1, 7, 10, 5, 'request', 1, '2024-12-12 14:54:23');
 
 -- --------------------------------------------------------
 
@@ -119,9 +128,17 @@ CREATE TABLE `requests` (
   `req_id` int(11) NOT NULL,
   `post_id` int(11) DEFAULT NULL,
   `req_user` int(11) DEFAULT NULL,
+  `req_receiver` int(11) NOT NULL,
   `req_accepted` tinyint(1) DEFAULT NULL,
   `req_donated` tinyint(1) DEFAULT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+
+--
+-- Dumping data for table `requests`
+--
+
+INSERT INTO `requests` (`req_id`, `post_id`, `req_user`, `req_receiver`, `req_accepted`, `req_donated`) VALUES
+(21, 5, 7, 10, 0, 0);
 
 -- --------------------------------------------------------
 
@@ -184,7 +201,7 @@ ALTER TABLE `histories`
 --
 ALTER TABLE `notifications`
   ADD PRIMARY KEY (`not_id`),
-  ADD KEY `not_user` (`not_user`);
+  ADD KEY `not_user` (`not_sender`);
 
 --
 -- Indexes for table `posts`
@@ -234,7 +251,7 @@ ALTER TABLE `histories`
 -- AUTO_INCREMENT for table `notifications`
 --
 ALTER TABLE `notifications`
-  MODIFY `not_id` int(11) NOT NULL AUTO_INCREMENT;
+  MODIFY `not_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=3;
 
 --
 -- AUTO_INCREMENT for table `posts`
@@ -246,7 +263,7 @@ ALTER TABLE `posts`
 -- AUTO_INCREMENT for table `requests`
 --
 ALTER TABLE `requests`
-  MODIFY `req_id` int(11) NOT NULL AUTO_INCREMENT;
+  MODIFY `req_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=23;
 
 --
 -- AUTO_INCREMENT for table `users`
@@ -275,7 +292,7 @@ ALTER TABLE `histories`
 -- Constraints for table `notifications`
 --
 ALTER TABLE `notifications`
-  ADD CONSTRAINT `notifications_ibfk_1` FOREIGN KEY (`not_user`) REFERENCES `users` (`user_id`);
+  ADD CONSTRAINT `notifications_ibfk_1` FOREIGN KEY (`not_sender`) REFERENCES `users` (`user_id`);
 
 --
 -- Constraints for table `posts`

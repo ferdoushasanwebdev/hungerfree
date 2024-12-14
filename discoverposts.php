@@ -1,6 +1,7 @@
 <?php
 include("./includes/header.php");
 include("./class/class.category.php");
+include("./class/class.request.php");
 
 if (!isset($_SESSION['user_id'])) {
     header("Location: index.php");
@@ -12,6 +13,17 @@ $posts = $postObj->fetchPosts();
 
 $catObj = new Category();
 $categories = $catObj->fetchCategories();
+
+$reqObj = new Request();
+
+if ($_SERVER['REQUEST_METHOD'] == "GET") {
+    if (isset($_GET['request']) && $_GET['request'] == 1) {
+        $postId = $_GET['post_id'];
+        $receiver = $_GET['receiver'];
+
+        $reqObj->insertRequest($postId, $_SESSION['user_id'], $receiver);
+    }
+}
 ?>
 <style>
     .post-card {
@@ -70,6 +82,18 @@ $categories = $catObj->fetchCategories();
                         } ?>
                     </select>
                 </div>
+                <div class="col-md-4">
+                    <label for="userDivision" class="form-label">Division</label>
+                    <select class="form-select" id="userDivision" name="user_division">
+                        <option value="">Select your division</option>
+                    </select>
+                </div>
+                <div class="col-md-4">
+                    <label for="userDistrict" class="form-label">District</label>
+                    <select class="form-select" id="userDistrict" name="user_district">
+                        <option value="">Select your district</option>
+                    </select>
+                </div>
             </div>
             <div class="row">
                 <div class="col-md-3">
@@ -91,7 +115,8 @@ $categories = $catObj->fetchCategories();
     ?>
             <div class="card post-card"
                 data-category="<?php echo ($post['cat_id']); ?>"
-                data-address="<?php echo ($_SESSION['user_district'] == $post['user_district'] ? 'within' : 'all'); ?>">
+                data-address="<?php echo ($_SESSION['user_district'] == $post['user_district'] ? 'within' : 'all'); ?>" data-division="<?php echo ($post['user_division']); ?>"
+                data-district="<?php echo ($post['user_district']); ?>">
                 <div class="card-body">
                     <div class="d-flex align-items-center mb-3">
                         <img src="./uploads/photo/<?php echo ($post['user_photo']); ?>" alt="Profile Picture" class="profile-pic" style="border-radius: 50%;">
@@ -107,7 +132,12 @@ $categories = $catObj->fetchCategories();
                         <p><strong>Freshness:</strong> <?php echo ($post['cat_duration']); ?> </p>
                         <p><strong>Address:</strong> <?php echo ($post['user_address']); ?>, <?php echo ($post['user_district']); ?>, <?php echo ($post['user_division']); ?></p>
                         <p><?php echo ($post['post_details']) ?></p>
-                        <button class="btn btn-primary">Send Request</button>
+                        <?php if ($reqObj->fetchRequestByUserId($post['post_id'], $_SESSION['user_id'])) {
+                        ?> <a class="btn btn-outline-primary text-primary">Request Sent</a> <?php
+                                                                                        } else {
+                                                                                            ?><a href="?request=1&&post_id=<?php echo ($post['post_id']); ?>&&receiver=<?php echo ($post['user_id']); ?>" class="btn btn-primary">Send Request</a><?php
+                                                                                                                                                                                                                                                } ?>
+
                     </div>
                 </div>
             </div>
@@ -140,42 +170,76 @@ $categories = $catObj->fetchCategories();
         imageModal.show();
     }
 
+    fetch('./assets/jsons/divisions.json')
+        .then(response => response.json())
+        .then(data => {
+            const divisionSelect = document.getElementById('userDivision');
+            const districtSelect = document.getElementById('userDistrict');
+
+            data.forEach(division => {
+                const option = document.createElement('option');
+                option.value = division.Name;
+                option.textContent = division.Name;
+                divisionSelect.appendChild(option);
+            });
+
+            divisionSelect.addEventListener("change", function() {
+                const selectedDivision = divisionSelect.value;
+                districtSelect.innerHTML = '<option value="">Select your district</option>';
+
+                const divisionData = data.find(item => item.Name === selectedDivision);
+                if (divisionData) {
+                    divisionData.Districts.forEach(district => {
+                        const option = document.createElement('option');
+                        option.value = district;
+                        option.textContent = district;
+                        districtSelect.appendChild(option);
+                    });
+                }
+            });
+        })
+        .catch(error => console.error('Error fetching divisions:', error));
+
     const categoryFilter = document.getElementById("categoryFilter");
     const addressOptions = document.querySelectorAll("input[name='addressOption']");
     const postCards = document.querySelectorAll(".post-card");
     const noResults = document.getElementById("noResults");
 
     function filterPosts() {
-        const selectedCategory = categoryFilter.value; // Get selected category value
+        const selectedCategory = categoryFilter.value; // Get selected address value
         const selectedAddress = document.querySelector("input[name='addressOption']:checked").value; // Get selected address value
+        const selectedDivision = document.getElementById('userDivision').value;
+        const selectedDistrict = document.getElementById('userDistrict').value;
 
         let visibleCount = 0; // Counter to track visible posts
 
         postCards.forEach(post => {
-            const postCategory = post.getAttribute("data-category"); // Get category from data attribute
+            const postCategory = post.getAttribute("data-category"); // Get address from data attribute
             const postAddress = post.getAttribute("data-address"); // Get address from data attribute
+            const postDivision = post.getAttribute("data-division");
+            const postDistrict = post.getAttribute("data-district");
 
             const matchesCategory = selectedCategory === "all" || postCategory === selectedCategory; // Check if category matches
             const matchesAddress = selectedAddress === "all" || (selectedAddress === "within" && postAddress === "within"); // Check if address matches
-
+            const matchesDivision = !selectedDivision || postDivision === selectedDivision;
+            const matchesDistrict = !selectedDistrict || postDistrict === selectedDistrict;
             // Display post if it matches both filters
-            if (matchesCategory && matchesAddress) {
+            if (matchesCategory && matchesAddress && matchesDivision && matchesDistrict) {
                 post.style.display = "block";
                 visibleCount++;
             } else {
                 post.style.display = "none";
             }
         });
-
         // Show 'No results' message if no posts are visible
         noResults.style.display = visibleCount === 0 ? "block" : "none";
     }
 
-
     categoryFilter.addEventListener("change", filterPosts);
     addressOptions.forEach(option => option.addEventListener("change", filterPosts));
+    document.getElementById("userDivision").addEventListener("change", filterPosts);
+    document.getElementById("userDistrict").addEventListener("change", filterPosts);
 
-    // Initial filtering on page load
     filterPosts();
 </script>
 

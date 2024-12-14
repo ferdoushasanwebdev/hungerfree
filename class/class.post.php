@@ -75,10 +75,30 @@ class Post
         }
     }
 
-    public function fetchPostsById($id)
+    public function fetchPostsByUserId($id)
     {
         try {
             $sql = "SELECT * FROM users INNER JOIN posts on users.user_id = posts.user_id INNER JOIN categories ON posts.cat_id = categories.cat_id WHERE users.user_id = ? ORDER BY posts.post_date DESC";
+
+            $stmt = $this->conn->prepare($sql);
+            $stmt->bind_param("i", $id);
+            $stmt->execute();
+            $result = $stmt->get_result();
+
+            if ($result->num_rows > 0) {
+                return $result = $result->fetch_all(MYSQLI_ASSOC);
+            } else {
+                $_SESSION['message'] = "No post found.";
+            }
+        } catch (\Throwable $th) {
+            echo ($th);
+        }
+    }
+
+    public function fetchPostsById($id)
+    {
+        try {
+            $sql = "SELECT * FROM users INNER JOIN posts on users.user_id = posts.user_id INNER JOIN categories ON posts.cat_id = categories.cat_id WHERE posts.post_id = ? ORDER BY posts.post_date DESC";
 
             $stmt = $this->conn->prepare($sql);
             $stmt->bind_param("i", $id);

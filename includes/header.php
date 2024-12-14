@@ -14,7 +14,6 @@ if (isset($_SESSION['user_id'])) {
     ['title' => 'Contact Us', 'link' => '#']
   ];
 }
-
 ?>
 
 <!DOCTYPE html>
@@ -48,13 +47,23 @@ if (isset($_SESSION['user_id'])) {
       <div class="collapse navbar-collapse" id="navbarNav">
         <ul class="navbar-nav ms-auto">
           <?php foreach ($userlinks as $userlink) {
+            if ($userlink['title'] == "Notifications") {
           ?>
-            <li class="nav-item">
-              <a class="nav-link" href=<?php echo $userlink['link'] ?>><?php echo $userlink['title'] ?></a>
-            </li>
+              <li class="nav-item">
+                <a class="nav-link notification-link" href="#" data-bs-toggle="modal" data-bs-target="#notificationsModal">Notifications</a>
+              </li>
+            <?php
+            } else {
+            ?>
+              <li class="nav-item">
+                <a class="nav-link" href=<?php echo $userlink['link'] ?>><?php echo $userlink['title'] ?></a>
+              </li>
           <?php
+            }
           } ?>
         </ul>
       </div>
     </div>
   </nav>
+
+  <?php include("./includes/notifications.php"); ?>

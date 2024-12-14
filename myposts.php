@@ -7,7 +7,7 @@ if (!isset($_SESSION['user_id'])) {
 
 include("./class/class.post.php");
 $postObj = new Post();
-$posts = $postObj->fetchPostsById($_SESSION['user_id']);
+$posts = $postObj->fetchPostsByUserId($_SESSION['user_id']);
 ?>
 
 <style>
@@ -63,7 +63,6 @@ $posts = $postObj->fetchPostsById($_SESSION['user_id']);
 </div>
 </div>
 
-<!-- Modal for Viewing Images -->
 <div class="modal fade" id="imageModal" tabindex="-1" aria-labelledby="imageModalLabel" aria-hidden="true">
     <div class="modal-dialog modal-dialog-centered">
         <div class="modal-content">
@@ -77,27 +76,6 @@ $posts = $postObj->fetchPostsById($_SESSION['user_id']);
         </div>
     </div>
 </div>
-
-<!-- Notifications Modal -->
-<div class="modal fade" id="notificationsModal" tabindex="-1" aria-labelledby="notificationsModalLabel" aria-hidden="true">
-    <div class="modal-dialog">
-        <div class="modal-content">
-            <div class="modal-header">
-                <h5 class="modal-title" id="notificationsModalLabel">Notifications</h5>
-                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-            </div>
-            <div class="modal-body">
-                <ul class="list-group">
-                    <li class="list-group-item">Notification 1</li>
-                    <li class="list-group-item">Notification 2</li>
-                    <li class="list-group-item">Notification 3</li>
-                </ul>
-            </div>
-        </div>
-    </div>
-</div>
-
-<!-- JavaScript -->
 <script>
     function showImage(src) {
         document.getElementById('modalImage').src = src;
