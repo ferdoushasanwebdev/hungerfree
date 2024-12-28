@@ -140,7 +140,7 @@ if ($_SERVER['REQUEST_METHOD'] == "GET") {
                         ?> <a href="?cancel=1&&post_id=<?php echo ($post['post_id']); ?>" class="btn btn-outline-primary text-primary">Request Sent</a> <?php
                                                                                                                                                     } else {
                                                                                                                                                         ?><a href="?request=1&&post_id=<?php echo ($post['post_id']); ?>&&receiver=<?php echo ($post['user_id']); ?>" class="btn btn-primary">Send Request</a><?php
-                                                                                                                                                                                                                                                                                                                                                        } ?>
+                                                                                                                                                                                                                                                                                                            } ?>
 
                     </div>
                 </div>

@@ -52,7 +52,9 @@ $posts = $postObj->fetchPostsByUserId($_SESSION['user_id']);
                         <p><strong>Freshness:</strong> <?php echo ($post['cat_duration']); ?> </p>
                         <p><strong>Address:</strong> <?php echo ($post['user_address']); ?>, <?php echo ($post['user_district']); ?>, <?php echo ($post['user_division']); ?></p>
                         <p><?php echo ($post['post_details']) ?></p>
-                        <button class="btn btn-primary">Send Request</button>
+                        <?php if ($post['user_id'] != $_SESSION['user_id']) {
+                        ?> <button class="btn btn-primary">Send Request</button> <?php
+                                                                                } ?>
                     </div>
                 </div>
             </div>
