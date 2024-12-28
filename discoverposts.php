@@ -22,6 +22,10 @@ if ($_SERVER['REQUEST_METHOD'] == "GET") {
         $receiver = $_GET['receiver'];
 
         $reqObj->insertRequest($postId, $_SESSION['user_id'], $receiver);
+    } else if (isset($_GET['cancel']) && $_GET['cancel'] == 1) {
+        $postId = $_GET['post_id'];
+
+        $reqObj->deleteRequest($postId, $_SESSION['user_id']);
     }
 }
 ?>
@@ -133,10 +137,10 @@ if ($_SERVER['REQUEST_METHOD'] == "GET") {
                         <p><strong>Address:</strong> <?php echo ($post['user_address']); ?>, <?php echo ($post['user_district']); ?>, <?php echo ($post['user_division']); ?></p>
                         <p><?php echo ($post['post_details']) ?></p>
                         <?php if ($reqObj->fetchRequestByUserId($post['post_id'], $_SESSION['user_id'])) {
-                        ?> <a class="btn btn-outline-primary text-primary">Request Sent</a> <?php
-                                                                                        } else {
-                                                                                            ?><a href="?request=1&&post_id=<?php echo ($post['post_id']); ?>&&receiver=<?php echo ($post['user_id']); ?>" class="btn btn-primary">Send Request</a><?php
-                                                                                                                                                                                                                                                } ?>
+                        ?> <a href="?cancel=1&&post_id=<?php echo ($post['post_id']); ?>" class="btn btn-outline-primary text-primary">Request Sent</a> <?php
+                                                                                                                                                    } else {
+                                                                                                                                                        ?><a href="?request=1&&post_id=<?php echo ($post['post_id']); ?>&&receiver=<?php echo ($post['user_id']); ?>" class="btn btn-primary">Send Request</a><?php
+                                                                                                                                                                                                                                                                                                                                                        } ?>
 
                     </div>
                 </div>

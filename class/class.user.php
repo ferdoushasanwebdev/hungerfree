@@ -237,4 +237,26 @@ class User
             echo ($th);
         }
     }
+
+    public function countDonor()
+    {
+        $role = "donor";
+        try {
+            $sql = "SELECT COUNT(*) AS donor_count FROM users WHERE user_role=?";
+            $stmt = $this->conn->prepare($sql);
+            $stmt->bind_param("s", $role);
+
+            if ($stmt->execute()) {
+                $result = $stmt->get_result();
+                $row = $result->fetch_assoc();
+                return $row['donor_count']; // Return the count of donors
+            } else {
+                $_SESSION['message'] = "Something went wrong.";
+                return 0; // Return 0 if query execution fails
+            }
+        } catch (\Throwable $th) {
+            echo ($th);
+            return 0; // Return 0 in case of an exception
+        }
+    }
 }

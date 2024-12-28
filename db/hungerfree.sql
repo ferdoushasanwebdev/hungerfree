@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Host: 127.0.0.1
--- Generation Time: Dec 14, 2024 at 05:43 PM
+-- Generation Time: Dec 28, 2024 at 02:41 PM
 -- Server version: 10.4.32-MariaDB
 -- PHP Version: 8.2.12
 
@@ -67,8 +67,16 @@ CREATE TABLE `feedbacks` (
 
 CREATE TABLE `histories` (
   `hist_id` int(11) NOT NULL,
-  `hist_post` int(11) DEFAULT NULL
+  `hist_post` int(11) DEFAULT NULL,
+  `hist_date` date NOT NULL DEFAULT current_timestamp()
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+
+--
+-- Dumping data for table `histories`
+--
+
+INSERT INTO `histories` (`hist_id`, `hist_post`, `hist_date`) VALUES
+(1, 5, '2024-12-28');
 
 -- --------------------------------------------------------
 
@@ -91,7 +99,9 @@ CREATE TABLE `notifications` (
 --
 
 INSERT INTO `notifications` (`not_id`, `not_sender`, `not_receiver`, `not_post`, `not_type`, `not_read`, `not_date`) VALUES
-(1, 7, 10, 5, 'request', 1, '2024-12-12 14:54:23');
+(5, 7, 10, 5, 'request', 1, '2024-12-25 14:22:04'),
+(6, 10, 7, 5, 'accept', 1, '2024-12-27 00:30:54'),
+(8, 7, 10, 5, 'donated', 1, '2024-12-27 01:06:26');
 
 -- --------------------------------------------------------
 
@@ -138,7 +148,7 @@ CREATE TABLE `requests` (
 --
 
 INSERT INTO `requests` (`req_id`, `post_id`, `req_user`, `req_receiver`, `req_accepted`, `req_donated`) VALUES
-(21, 5, 7, 10, 0, 0);
+(25, 5, 7, 10, 1, 1);
 
 -- --------------------------------------------------------
 
@@ -245,13 +255,13 @@ ALTER TABLE `feedbacks`
 -- AUTO_INCREMENT for table `histories`
 --
 ALTER TABLE `histories`
-  MODIFY `hist_id` int(11) NOT NULL AUTO_INCREMENT;
+  MODIFY `hist_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=2;
 
 --
 -- AUTO_INCREMENT for table `notifications`
 --
 ALTER TABLE `notifications`
-  MODIFY `not_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=3;
+  MODIFY `not_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=9;
 
 --
 -- AUTO_INCREMENT for table `posts`
@@ -263,7 +273,7 @@ ALTER TABLE `posts`
 -- AUTO_INCREMENT for table `requests`
 --
 ALTER TABLE `requests`
-  MODIFY `req_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=23;
+  MODIFY `req_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=26;
 
 --
 -- AUTO_INCREMENT for table `users`

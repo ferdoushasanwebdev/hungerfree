@@ -1,10 +1,25 @@
 <?php
 include("./includes/header.php");
+include("./class/class.history.php");
+include("./class/class.user.php");
 
 if (!isset($_SESSION['user_id'])) {
   header("Location: index.php");
   exit();
 }
+
+if ($_SESSION['user_role'] == "admin") {
+  $histObj = new History();
+  $userObj = new User();
+  $countDonor = $userObj->countDonor();
+  $countDonation = $histObj->countHistory();
+}
+
+if ($_SESSION['user_role'] == "donor") {
+  $histObj = new History();
+  $countDonation = $histObj->countHistoryById($_SESSION['user_id']);
+}
+
 ?>
 <?php include("./includes/sidebar.php") ?>
 
@@ -21,7 +36,7 @@ if (!isset($_SESSION['user_id'])) {
           <div class="card">
             <div class="card-body">
               <h5 class="card-title">Total Food Donors</h5>
-              <p class="card-text display-4" id="totalDonors">120</p>
+              <p class="card-text display-4" id="totalDonors"><?php echo ($countDonor) ?></p>
             </div>
           </div>
         </div>
@@ -29,7 +44,7 @@ if (!isset($_SESSION['user_id'])) {
           <div class="card">
             <div class="card-body">
               <h5 class="card-title">Total Food Donations</h5>
-              <p class="card-text display-4" id="totalDonations">350</p>
+              <p class="card-text display-4" id="totalDonations"><?php echo ($countDonation) ?></p>
             </div>
           </div>
         </div><?php
@@ -40,7 +55,7 @@ if (!isset($_SESSION['user_id'])) {
           <div class="card">
             <div class="card-body">
               <h5 class="card-title">Total Donated Foods</h5>
-              <p class="card-text display-4" id="totalDonations">350</p>
+              <p class="card-text display-4" id="totalDonations"><?php echo ($countDonation) ?></p>
             </div>
           </div>
         </div><?php
@@ -79,57 +94,90 @@ if (!isset($_SESSION['user_id'])) {
 </div>
 
 <script>
-  const areaCtx = document.getElementById("areaChart").getContext("2d");
-  new Chart(areaCtx, {
-    type: "bar",
-    data: {
-      labels: ["Area 1", "Area 2", "Area 3", "Area 4", "Area 5"],
-      datasets: [{
-        label: "Food Donations",
-        data: [50, 80, 60, 90, 70],
-        backgroundColor: "rgba(54, 162, 235, 0.6)",
-        borderColor: "rgba(54, 162, 235, 1)",
-        borderWidth: 1,
-      }, ],
-    },
-    options: {
-      scales: {
-        y: {
-          beginAtZero: true,
-        },
-      },
-    },
-  });
+  async function fetchDivisionData() {
+    try {
+      const response = await fetch('./fetchDivisionData.php'); // Replace with the correct path
+      const data = await response.json();
 
-  const timeCtx = document.getElementById("timeChart").getContext("2d");
-  new Chart(timeCtx, {
-    type: "line",
-    data: {
-      labels: ["Week 1", "Week 2", "Week 3", "Week 4"],
-      datasets: [{
-          label: "Last Month",
-          data: [30, 45, 50, 40],
-          backgroundColor: "rgba(75, 192, 192, 0.2)",
-          borderColor: "rgba(75, 192, 192, 1)",
-          borderWidth: 1,
+      // Extract division names and donation counts
+      const labels = data.map(item => item.division);
+      const counts = data.map(item => item.donation_count);
+
+      // Render chart with fetched data
+      const areaCtx = document.getElementById("areaChart").getContext("2d");
+      new Chart(areaCtx, {
+        type: "bar",
+        data: {
+          labels: labels,
+          datasets: [{
+            label: "Food Donations",
+            data: counts,
+            backgroundColor: "rgba(54, 162, 235, 0.6)",
+            borderColor: "rgba(54, 162, 235, 1)",
+            borderWidth: 1,
+          }, ],
         },
-        {
-          label: "Last Week",
-          data: [12, 20, 15, 25],
-          backgroundColor: "rgba(255, 159, 64, 0.2)",
-          borderColor: "rgba(255, 159, 64, 1)",
-          borderWidth: 1,
+        options: {
+          scales: {
+            y: {
+              beginAtZero: true,
+            },
+          },
         },
-      ],
-    },
-    options: {
-      scales: {
-        y: {
-          beginAtZero: true,
+      });
+    } catch (error) {
+      console.error("Error fetching division data:", error);
+    }
+  }
+
+  // Call the function when the page loads
+  fetchDivisionData();
+
+
+  async function fetchHistoryData() {
+    try {
+      const response = await fetch('./fetchHistoryData.php'); // Path to your PHP script
+      const data = await response.json();
+
+      // Extract months and history counts
+      const labels = data.map(item => item.month);
+      const counts = data.map(item => item.history_count);
+
+      // Render the chart
+      const timeCtx = document.getElementById("timeChart").getContext("2d");
+      new Chart(timeCtx, {
+        type: "line",
+        data: {
+          labels: labels,
+          datasets: [{
+            label: "Histories by Month",
+            data: counts,
+            backgroundColor: "rgba(75, 192, 192, 0.2)",
+            borderColor: "rgba(75, 192, 192, 1)",
+            borderWidth: 1,
+          }, ],
         },
-      },
-    },
-  });
+        options: {
+          scales: {
+            y: {
+              beginAtZero: true,
+              ticks: {
+                stepSize: 1, // Ensure the y-axis shows integer steps
+                callback: function(value) {
+                  return Number.isInteger(value) ? value : null; // Show integers only
+                },
+              },
+            },
+          },
+        },
+      });
+    } catch (error) {
+      console.error("Error fetching history data:", error);
+    }
+  }
+
+  // Call the function when the page loads
+  fetchHistoryData();
 </script>
 
 <?php include("./includes/footer.php") ?>

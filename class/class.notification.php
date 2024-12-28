@@ -39,7 +39,9 @@ class Notification
             INNER JOIN 
                 posts ON posts.post_id = notifications.not_post
             WHERE 
-                notifications.not_receiver = ?";
+                notifications.not_receiver = ? 
+            ORDER BY 
+                notifications.not_date DESC"; // Added ORDER BY clause
 
         try {
             $stmt = $this->conn->prepare($sql);
@@ -53,9 +55,12 @@ class Notification
                 return [];
             }
         } catch (\Throwable $th) {
+            // Log or handle the error gracefully
             echo "Error: " . $th->getMessage();
+            return [];
         }
     }
+
 
     public function updateNotificationStatus($id)
     {
@@ -75,17 +80,17 @@ class Notification
         }
     }
 
-    public function deleteCategory($id)
+    public function deleteNotification($postId, $userId)
     {
-        $sql = "DELETE FROM categories WHERE cat_id=?";
+        $sql = "DELETE FROM notifications WHERE not_post=? AND not_sender=?";
         try {
             $stmt = $this->conn->prepare($sql);
-            $stmt->bind_param("i", $id);
+            $stmt->bind_param("ii", $postId, $userId);
 
             if ($stmt->execute()) {
-                $_SESSION['message'] = "Deleted successfully.";
+                return true;
             } else {
-                $_SESSION['message'] = "Something went wrong.";
+                return false;
             }
         } catch (\Throwable $th) {
             echo ($th);
